@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Browse — Lorcana Cards{% endblock %}
+
+{% block lang_buttons %}
+<div class="lang-toggle" role="group" aria-label="Language">
+  {% for lc in ["en", "de"] %}
+  <a class="lang-btn {% if lc == lang %}active{% endif %}"
+     href="/browse?lang={{ lc }}">{{ lc|upper }}</a>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block content %}
+<main class="browse-main">
+  <div class="browse-header">
+    <h1 class="page-title">Browse</h1>
+    <div class="browse-filter-wrap">
+      <input id="browse-filter" class="browse-filter" type="search"
+             placeholder="Filter stories or characters…" autocomplete="off" />
+    </div>
+  </div>
+
+  <section class="browse-section" id="section-stories">
+    <h2 class="browse-section-title">
+      Stories &amp; Franchises
+      <span class="browse-count" id="story-count">({{ stories|length }})</span>
+    </h2>
+    <div class="browse-grid" id="story-grid">
+      {% for story, count in stories %}
+      <a class="browse-tile"
+         href="/?q={{ ("story:\"" + story + "\"") | urlencode }}&lang={{ lang }}"
+         data-name="{{ story|lower }}">
+        <span class="browse-tile-name">{{ story }}</span>
+        <span class="browse-tile-count">{{ count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="browse-section" id="section-chars">
+    <h2 class="browse-section-title">
+      Characters
+      <span class="browse-count" id="char-count">({{ chars|length }})</span>
+    </h2>
+    <div class="browse-grid browse-grid-chars" id="char-grid">
+      {% for name, count in chars %}
+      <a class="browse-tile"
+         href="/?q={{ ("t:character char:\"" + name + "\"") | urlencode }}&lang={{ lang }}"
+         data-name="{{ name|lower }}">
+        <span class="browse-tile-name">{{ name }}</span>
+        <span class="browse-tile-count">{{ count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(() => {
+  const input = document.getElementById("browse-filter");
+  const storyCount = document.getElementById("story-count");
+  const charCount  = document.getElementById("char-count");
+
+  input.addEventListener("input", () => {
+    const q = input.value.toLowerCase().trim();
+
+    let sc = 0, cc = 0;
+    document.querySelectorAll("#story-grid .browse-tile").forEach(el => {
+      const visible = !q || el.dataset.name.includes(q);
+      el.style.display = visible ? "" : "none";
+      if (visible) sc++;
+    });
+    document.querySelectorAll("#char-grid .browse-tile").forEach(el => {
+      const visible = !q || el.dataset.name.includes(q);
+      el.style.display = visible ? "" : "none";
+      if (visible) cc++;
+    });
+
+    storyCount.textContent = `(${sc})`;
+    charCount.textContent  = `(${cc})`;
+  });
+})();
+</script>
+{% endblock %}

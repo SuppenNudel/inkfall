@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block subheader %}
+<nav class="color-bar" aria-label="Quick color filters">
+  <button class="color-pill" data-query="">All</button>
+  <button class="color-pill amber"    data-query="c:amber">Amber</button>
+  <button class="color-pill amethyst" data-query="c:amethyst">Amethyst</button>
+  <button class="color-pill emerald"  data-query="c:emerald">Emerald</button>
+  <button class="color-pill ruby"     data-query="c:ruby">Ruby</button>
+  <button class="color-pill sapphire" data-query="c:sapphire">Sapphire</button>
+  <button class="color-pill steel"    data-query="c:steel">Steel</button>
+</nav>
+{% endblock %}
+
+{% block content %}
+<main class="search-main">
+
+  <div class="controls-bar">
+    <div class="controls-left">
+      <span id="results-count" class="results-count"></span>
+      <span id="results-query" class="results-query"></span>
+    </div>
+    <div class="controls-right">
+      <div class="unique-toggle" role="group" aria-label="Display mode">
+        <button class="unique-btn active" data-unique="cards">Cards</button>
+        <button class="unique-btn" data-unique="prints">All Prints</button>
+      </div>
+      <select id="sort-select" title="Sort by">
+        <option value="name">Name</option>
+        <option value="cost">Cost</option>
+        <option value="rarity">Rarity</option>
+        <option value="lore">Lore</option>
+        <option value="strength">Strength</option>
+        <option value="willpower">Willpower</option>
+      </select>
+      <button id="sort-dir-btn" class="icon-btn" data-dir="asc" title="Toggle sort direction">↑</button>
+      <button id="refresh-btn" class="icon-btn" title="Re-download card data">↺</button>
+      <label class="size-label" title="Card size">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        <input id="size-slider" class="size-slider" type="range" min="100" max="280" step="10" value="150" />
+      </label>
+    </div>
+  </div>
+
+  <div id="error-msg" class="error-banner hidden"></div>
+  <div id="warn-msg" class="warn-banner hidden"></div>
+  <div id="card-grid" class="card-grid" role="list"></div>
+  <div id="loading" class="loading-spinner hidden"><div class="spinner"></div></div>
+  <nav id="pagination" class="pagination" aria-label="Pages"></nav>
+
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/app.js"></script>
+{% endblock %}

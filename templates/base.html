@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Lorcana Cards{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="/">
+      <span class="logo-mark">✦</span>
+      <span>Lorcana Cards</span>
+    </a>
+
+    <nav class="site-nav">
+      <a class="nav-link" href="/advanced">Advanced</a>
+      <a class="nav-link" href="/browse">Browse</a>
+    </nav>
+
+    <form class="search-form" id="search-form" role="search" autocomplete="off"
+          action="/" method="get">
+      <div class="search-wrap">
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          name="q"
+          value="{{ request.args.get('q', '') }}"
+          placeholder="elsa, c:ruby t:character, kw:rush, cost>=5 …"
+          spellcheck="false"
+          aria-label="Search Lorcana cards"
+        />
+        <button class="search-btn" type="submit" aria-label="Search">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+
+    <div class="header-right">
+      {% block lang_buttons %}
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="de">DE</button>
+      </div>
+      {% endblock %}
+      <button class="syntax-toggle" id="syntax-toggle" aria-expanded="false" aria-controls="syntax-panel">
+        Syntax <span class="toggle-caret">▾</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="syntax-panel hidden" id="syntax-panel">
+    <div class="syntax-inner">
+      <div class="syntax-col">
+        <h3>Name &amp; Text</h3>
+        <dl>
+          <dt><code>elsa</code></dt><dd>name contains</dd>
+          <dt><code>!elsa snow queen</code></dt><dd>exact name</dd>
+          <dt><code>o:ward</code></dt><dd>rules text</dd>
+          <dt><code>kw:rush</code></dt><dd>keyword ability</dd>
+          <dt><code>ft:dream</code></dt><dd>flavor text</dd>
+          <dt><code>a:artist</code></dt><dd>artist name</dd>
+          <dt><code>story:frozen</code></dt><dd>franchise</dd>
+        </dl>
+      </div>
+      <div class="syntax-col">
+        <h3>Color · Type · Rarity</h3>
+        <dl>
+          <dt><code>c:ruby</code> <code>c:r</code></dt><dd>ink color (r b g p y s)</dd>
+          <dt><code>t:character</code></dt><dd>type or subtype</dd>
+          <dt><code>t:hero</code> <code>t:song</code></dt><dd>subtypes</dd>
+          <dt><code>r:legendary</code> <code>r:l</code></dt><dd>rarity</dd>
+          <dt><code>r>=r</code></dt><dd>rare or above</dd>
+          <dt><code>s:3</code> <code>e:1</code></dt><dd>set number</dd>
+        </dl>
+      </div>
+      <div class="syntax-col">
+        <h3>Stats &amp; Logic</h3>
+        <dl>
+          <dt><code>cost=5</code> <code>mv>=3</code></dt><dd>ink cost</dd>
+          <dt><code>str>=4</code> <code>wp<=3</code></dt><dd>strength / willpower</dd>
+          <dt><code>lore>=2</code></dt><dd>lore value</dd>
+          <dt><code>is:inkable</code></dt><dd>can be put in inkwell</dd>
+          <dt><code>is:vanilla</code></dt><dd>no rules text</dd>
+          <dt><code>is:french-vanilla</code></dt><dd>keywords only</dd>
+          <dt><code>-kw:rush</code></dt><dd>negate any term</dd>
+          <dt><code>t:char OR t:item</code></dt><dd>boolean OR</dd>
+          <dt><code>(c:ruby OR c:amber) lore>=3</code></dt><dd>grouping</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</header>
+
+{% block subheader %}{% endblock %}
+
+{% block content %}{% endblock %}
+
+<script>
+  // Syntax toggle (shared across all pages)
+  (() => {
+    const btn = document.getElementById("syntax-toggle");
+    const panel = document.getElementById("syntax-panel");
+    if (!btn || !panel) return;
+    btn.addEventListener("click", () => {
+      const open = panel.classList.toggle("hidden") === false;
+      btn.setAttribute("aria-expanded", String(open));
+    });
+  })();
+</script>
+
+{% block extra_scripts %}{% endblock %}
+
+</body>
+</html>

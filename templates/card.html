@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}{{ card.fullName }} — Lorcana Cards{% endblock %}
+
+{% block lang_buttons %}
+<div class="lang-toggle" role="group" aria-label="Language">
+  {% for lc in ["en", "de"] %}
+  <a class="lang-btn {% if lc == lang %}active{% endif %}"
+     href="/card/{{ card_id }}?lang={{ lc }}">{{ lc|upper }}</a>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block content %}
+<main class="card-main">
+
+  <div class="card-page-inner">
+
+    <!-- ── Left column: image + set info ── -->
+    <div class="card-page-left">
+      <a class="back-link" href="/">← Search</a>
+
+      <div class="card-full-wrap">
+        {% if card.fullImage %}
+          <img class="card-full-img" src="{{ card.fullImage }}" alt="{{ card.fullName }}" />
+        {% elif card.thumbnail %}
+          <img class="card-full-img" src="{{ card.thumbnail }}" alt="{{ card.fullName }}" />
+        {% else %}
+          <div class="card-full-placeholder">✦</div>
+        {% endif %}
+      </div>
+
+      {% if card.fullIdentifier %}
+      <p class="card-identifier">{{ card.fullIdentifier }}</p>
+      {% endif %}
+      {% if set_name %}
+      <p class="card-set-name">{{ set_name }}</p>
+      {% endif %}
+    </div>
+
+    <!-- ── Right column: details ── -->
+    <div class="card-page-right">
+
+      <div class="card-page-header">
+        {% if card.story %}
+        <a class="card-story card-meta-link"
+           href="/?q={{ ('story:"' + card.storyEn + '"') | urlencode }}&lang={{ lang }}">{{ card.story }}</a>
+        {% endif %}
+        <h1 class="card-page-name">
+          {% if card.type == "Character" %}
+          <a class="card-meta-link"
+             href="/?q={{ ('t:character char:"' + card.name + '"') | urlencode }}&lang={{ lang }}">{{ card.name }}</a>
+          {% else %}
+          {{ card.name }}
+          {% endif %}
+          {% if card.version %}<span class="card-version">— {{ card.version }}</span>{% endif %}
+        </h1>
+      </div>
+
+      <!-- Chips: color, type, subtypes, rarity, inkable -->
+      <div class="card-chips">
+        {% if card.color %}
+        <span class="chip chip-color-{{ card.colorClass }}">{{ card.color }}</span>
+        {% endif %}
+        {% if card.type %}
+        <span class="chip">{{ card.type }}</span>
+        {% endif %}
+        {% if card.subtypesText %}
+        <span class="chip">
+          {% for sub in (card.subtypesText.split(" • ") if card.subtypesText else []) %}
+          <a class="subtype-link" href="/?q={{ ('t:"' + sub + '"') | urlencode }}&lang={{ lang }}">{{ sub }}</a>{% if not loop.last %} • {% endif %}
+          {% endfor %}
+        </span>
+        {% endif %}
+        {% if card.rarity %}
+        <span class="chip chip-rarity">{{ card.rarity }}</span>
+        {% endif %}
+        <span class="chip">{{ "◉ Inkable" if card.inkwell else "⊘ Not inkable" }}</span>
+      </div>
+
+      <!-- Stats -->
+      {% set has_stats = card.cost is not none or card.strength is not none or card.willpower is not none or card.lore is not none or card.moveCost is not none %}
+      {% if has_stats %}
+      <div class="card-stats">
+        {% if card.cost is not none %}
+        <div class="stat-block"><span class="stat-label">Cost ⬡</span><span class="stat-value">{{ card.cost }}</span></div>
+        {% endif %}
+        {% if card.strength is not none %}
+        <div class="stat-block"><span class="stat-label">Strength ¤</span><span class="stat-value">{{ card.strength }}</span></div>
+        {% endif %}
+        {% if card.willpower is not none %}
+        <div class="stat-block"><span class="stat-label">Willpower ⛉</span><span class="stat-value">{{ card.willpower }}</span></div>
+        {% endif %}
+        {% if card.lore is not none %}
+        <div class="stat-block"><span class="stat-label">Lore ◊</span><span class="stat-value">{{ card.lore }}</span></div>
+        {% endif %}
+        {% if card.moveCost is not none %}
+        <div class="stat-block"><span class="stat-label">Move cost</span><span class="stat-value">{{ card.moveCost }}</span></div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Keywords row -->
+      {% if card.keywordAbilities %}
+      <div class="card-keywords">
+        {% for kw in card.keywordAbilities %}
+        <span class="kw-badge">{{ kw }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Rules text -->
+      {% if card.fullText %}
+      <div class="card-rules-text">{{ card.fullText }}</div>
+      {% endif %}
+
+      <!-- Flavor text -->
+      {% if card.flavorText %}
+      <p class="card-flavor-text">{{ card.flavorText }}</p>
+      {% endif %}
+
+      <!-- Artist -->
+      {% if card.artistsText %}
+      <p class="card-artist">Illustrated by {{ card.artistsText }}</p>
+      {% endif %}
+
+      {% if card.cardmarketUrl %}
+      <a class="external-link cardmarket-link"
+         href="{{ card.cardmarketUrl }}"
+         target="_blank" rel="noopener noreferrer">Cardmarket ↗</a>
+      {% endif %}
+      <a class="json-link"
+         href="/api/card/{{ card_id }}?lang={{ lang }}"
+         target="_blank" rel="noopener">{ } JSON</a>
+
+      <!-- Format legality -->
+      {% if card.allowedInFormats %}
+      <div class="card-formats">
+        <h3 class="card-formats-title">Tournament Formats</h3>
+        <div class="format-list">
+          {% for fmt_name, fmt_data in card.allowedInFormats.items() %}
+          <div class="format-item {% if fmt_data.get('allowed') %}legal{% else %}not-legal{% endif %}">
+            <span class="fmt-name">{{ fmt_name|title }}</span>
+            <span class="fmt-status">{{ "Legal" if fmt_data.get("allowed") else "Not Legal" }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- ── Other versions ── -->
+  {% if versions|length > 1 %}
+  <section class="card-versions">
+    <h2 class="versions-title">Other versions <span class="versions-count">({{ versions|length }})</span></h2>
+    <div class="versions-grid">
+      {% for v in versions %}
+      <a class="version-tile {% if v.isCurrent %}current{% endif %}"
+         href="/card/{{ v.id }}?lang={{ lang }}"
+         title="{{ v.label }}">
+        {% if v.thumbnail %}
+        <img class="version-img" src="{{ v.thumbnail }}" alt="{{ v.label }}" loading="lazy" />
+        {% else %}
+        <div class="version-placeholder">✦</div>
+        {% endif %}
+        <div class="version-body">
+          <span class="version-label">{{ v.label }}</span>
+          {% if v.sublabel and v.sublabel != v.label %}
+          <span class="version-rarity">{{ v.sublabel }}</span>
+          {% endif %}
+        </div>
+        {% if v.isCurrent %}<div class="version-current-badge">Viewing</div>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</main>
+{% endblock %}

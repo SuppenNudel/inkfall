@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% block title %}Advanced Search — Lorcana Cards{% endblock %}
+
+{% block lang_buttons %}
+<div class="lang-toggle" role="group" aria-label="Language">
+  {% for lc in ["en", "de"] %}
+  <a class="lang-btn {% if lc == lang %}active{% endif %}"
+     href="/advanced?lang={{ lc }}">{{ lc|upper }}</a>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block content %}
+<main class="adv-main">
+  <h1 class="page-title">Advanced Search</h1>
+  <p class="page-sub">Fill in any combination of fields. All conditions are combined with AND.</p>
+
+  <form id="adv-form" class="adv-form" novalidate>
+
+    <fieldset class="adv-section">
+      <legend>Name &amp; Text</legend>
+      <div class="adv-row">
+        <label class="adv-label">Card name</label>
+        <div class="adv-controls">
+          <select id="name-mode" class="adv-select-sm">
+            <option value="contains">contains</option>
+            <option value="exact">is exactly</option>
+            <option value="not">doesn't contain</option>
+          </select>
+          <input id="name-val" class="adv-input" type="text" placeholder="e.g. Elsa" />
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Rules text</label>
+        <div class="adv-controls">
+          <select id="text-mode" class="adv-select-sm">
+            <option value="contains">contains</option>
+            <option value="not">doesn't contain</option>
+          </select>
+          <input id="text-val" class="adv-input" type="text" placeholder="e.g. draw a card" />
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Flavor text</label>
+        <div class="adv-controls">
+          <input id="flavor-val" class="adv-input" type="text" placeholder="e.g. dream" />
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Keyword ability</label>
+        <div class="adv-controls">
+          <input id="kw-val" class="adv-input" type="text" placeholder="e.g. Rush, Ward, Shift" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="adv-section">
+      <legend>Color &amp; Type</legend>
+      <div class="adv-row">
+        <label class="adv-label">Ink color</label>
+        <div class="adv-controls adv-colors">
+          <label class="color-toggle amber"><input class="color-check" type="checkbox" value="amber" /><span>Amber</span></label>
+          <label class="color-toggle amethyst"><input class="color-check" type="checkbox" value="amethyst" /><span>Amethyst</span></label>
+          <label class="color-toggle emerald"><input class="color-check" type="checkbox" value="emerald" /><span>Emerald</span></label>
+          <label class="color-toggle ruby"><input class="color-check" type="checkbox" value="ruby" /><span>Ruby</span></label>
+          <label class="color-toggle sapphire"><input class="color-check" type="checkbox" value="sapphire" /><span>Sapphire</span></label>
+          <label class="color-toggle steel"><input class="color-check" type="checkbox" value="steel" /><span>Steel</span></label>
+          <select id="color-mode" class="adv-select-sm">
+            <option value="or">any of these</option>
+            <option value="and">all of these</option>
+          </select>
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Card type</label>
+        <div class="adv-controls">
+          <select id="type-val" class="adv-select">
+            <option value="">Any type</option>
+            <option value="character">Character</option>
+            <option value="action">Action</option>
+            <option value="item">Item</option>
+            <option value="location">Location</option>
+          </select>
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Subtype</label>
+        <div class="adv-controls">
+          <input id="subtype-val" class="adv-input" type="text" placeholder="e.g. Hero, Princess, Song" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="adv-section">
+      <legend>Rarity, Set &amp; Inkable</legend>
+      <div class="adv-row">
+        <label class="adv-label">Rarity</label>
+        <div class="adv-controls">
+          <select id="rarity-op" class="adv-select-sm">
+            <option value=":">is</option>
+            <option value=">=">at least</option>
+            <option value="<=">at most</option>
+          </select>
+          <select id="rarity-val" class="adv-select">
+            <option value="">Any rarity</option>
+            <option value="c">Common</option>
+            <option value="u">Uncommon</option>
+            <option value="r">Rare</option>
+            <option value="sr">Super Rare</option>
+            <option value="l">Legendary</option>
+            <option value="e">Enchanted</option>
+            <option value="ep">Epic</option>
+            <option value="ic">Iconic</option>
+            <option value="sp">Special</option>
+          </select>
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Set</label>
+        <div class="adv-controls">
+          <select id="set-val" class="adv-select">
+            <option value="">Any set</option>
+            {% for code, name in sets %}
+            <option value="{{ code }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Inkable</label>
+        <div class="adv-controls">
+          <select id="ink-val" class="adv-select">
+            <option value="">Any</option>
+            <option value="yes">Yes (can be inked)</option>
+            <option value="no">No (cannot be inked)</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="adv-section">
+      <legend>Stats</legend>
+      {% for field, label, kw in [
+        ("cost",  "Ink cost ⬡",      "cost"),
+        ("str",   "Strength ¤",      "str"),
+        ("wp",    "Willpower ⛉",    "wp"),
+        ("lore",  "Lore ◊",          "lore"),
+      ] %}
+      <div class="adv-row">
+        <label class="adv-label">{{ label }}</label>
+        <div class="adv-controls">
+          <select id="{{ field }}-op" class="adv-select-sm" data-kw="{{ kw }}">
+            <option value="=">=</option>
+            <option value=">=">&ge;</option>
+            <option value="<=">&le;</option>
+            <option value=">">&gt;</option>
+            <option value="<">&lt;</option>
+            <option value="!=">&ne;</option>
+          </select>
+          <input id="{{ field }}-val" class="adv-input-num" type="number" min="0" max="20" placeholder="—" />
+        </div>
+      </div>
+      {% endfor %}
+    </fieldset>
+
+    <fieldset class="adv-section">
+      <legend>Other</legend>
+      <div class="adv-row">
+        <label class="adv-label">Artist</label>
+        <div class="adv-controls">
+          <input id="artist-val" class="adv-input" type="text" placeholder="e.g. Spears" />
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Story / Franchise</label>
+        <div class="adv-controls">
+          <input id="story-val" class="adv-input" type="text" placeholder="e.g. Frozen" />
+        </div>
+      </div>
+      <div class="adv-row">
+        <label class="adv-label">Special</label>
+        <div class="adv-controls adv-checks">
+          <label><input class="is-check" type="checkbox" value="is:vanilla" /> Vanilla (no text)</label>
+          <label><input class="is-check" type="checkbox" value="is:french-vanilla" /> French-vanilla (keywords only)</label>
+          <label><input class="is-check" type="checkbox" value="is:song" /> Song</label>
+          <label><input class="is-check" type="checkbox" value="is:banned" /> Banned</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="adv-footer">
+      <div class="adv-preview-wrap">
+        <span class="adv-preview-label">Query:</span>
+        <code id="adv-preview" class="adv-preview"></code>
+      </div>
+      <div class="adv-btns">
+        <button type="button" id="adv-reset" class="adv-btn-secondary">Reset</button>
+        <button type="submit" class="adv-btn-primary">Search</button>
+      </div>
+    </div>
+
+  </form>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(() => {
+  const BASE = "";
+
+  function buildQuery() {
+    const parts = [];
+
+    const nameMode = document.getElementById("name-mode").value;
+    const nameVal  = document.getElementById("name-val").value.trim();
+    if (nameVal) {
+      if (nameMode === "exact") parts.push(`!"${nameVal}"`);
+      else if (nameMode === "not") parts.push(`-"${nameVal}"`);
+      else parts.push(`"${nameVal}"`);
+    }
+
+    const textMode = document.getElementById("text-mode").value;
+    const textVal  = document.getElementById("text-val").value.trim();
+    if (textVal) parts.push(`${textMode === "not" ? "-" : ""}o:"${textVal}"`);
+
+    const flavorVal = document.getElementById("flavor-val").value.trim();
+    if (flavorVal) parts.push(`ft:"${flavorVal}"`);
+
+    const kwVal = document.getElementById("kw-val").value.trim();
+    if (kwVal) parts.push(`kw:"${kwVal}"`);
+
+    const colors = [...document.querySelectorAll(".color-check:checked")].map(c => c.value);
+    if (colors.length === 1) {
+      parts.push(`c:${colors[0]}`);
+    } else if (colors.length > 1) {
+      const mode = document.getElementById("color-mode").value;
+      const cps  = colors.map(c => `c:${c}`);
+      if (mode === "or") parts.push(`(${cps.join(" OR ")})`);
+      else cps.forEach(cp => parts.push(cp));
+    }
+
+    const typeVal = document.getElementById("type-val").value;
+    if (typeVal) parts.push(`t:${typeVal}`);
+
+    const subVal = document.getElementById("subtype-val").value.trim();
+    if (subVal) parts.push(`t:"${subVal}"`);
+
+    const rarityOp  = document.getElementById("rarity-op").value;
+    const rarityVal = document.getElementById("rarity-val").value;
+    if (rarityVal) parts.push(`r${rarityOp}${rarityVal}`);
+
+    const setVal = document.getElementById("set-val").value;
+    if (setVal) parts.push(`s:${setVal}`);
+
+    const inkVal = document.getElementById("ink-val").value;
+    if (inkVal === "yes") parts.push("is:inkable");
+    else if (inkVal === "no") parts.push("-is:inkable");
+
+    for (const [fid, kw] of [["cost","cost"],["str","str"],["wp","wp"],["lore","lore"]]) {
+      const op  = document.getElementById(`${fid}-op`).value;
+      const val = document.getElementById(`${fid}-val`).value.trim();
+      if (val !== "") parts.push(`${kw}${op}${val}`);
+    }
+
+    const artistVal = document.getElementById("artist-val").value.trim();
+    if (artistVal) parts.push(`a:"${artistVal}"`);
+
+    const storyVal = document.getElementById("story-val").value.trim();
+    if (storyVal) parts.push(`story:"${storyVal}"`);
+
+    document.querySelectorAll(".is-check:checked").forEach(cb => parts.push(cb.value));
+
+    return parts.join(" ");
+  }
+
+  function updatePreview() {
+    document.getElementById("adv-preview").textContent = buildQuery() || "(no filters)";
+  }
+
+  document.getElementById("adv-form").querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("change", updatePreview);
+    el.addEventListener("input", updatePreview);
+  });
+
+  document.getElementById("adv-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const q = buildQuery();
+    location.href = `${BASE}/${q ? "?q=" + encodeURIComponent(q) : ""}`;
+  });
+
+  document.getElementById("adv-reset").addEventListener("click", () => {
+    document.getElementById("adv-form").reset();
+    document.querySelectorAll(".color-check").forEach(c => c.checked = false);
+    updatePreview();
+  });
+
+  updatePreview();
+})();
+</script>
+{% endblock %}
