@@ -1,0 +1,10 @@
+[Unit]
+Description=Pull latest inkfall changes and restart the app
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/home/inkfall/project
+ExecStart=/home/inkfall/project/deploy/update.sh

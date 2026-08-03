@@ -1,0 +1,18 @@
+[Unit]
+Description=inkfall GitHub webhook receiver
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=inkfall
+Group=www-data
+WorkingDirectory=/home/inkfall/project
+Environment="INKFALL_WEBHOOK_PORT=9001"
+Environment="INKFALL_WEBHOOK_SECRET=CHANGE_ME"
+ExecStart=/home/inkfall/project/.venv/bin/python /home/inkfall/project/deploy/github-webhook.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

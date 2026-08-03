@@ -6,6 +6,23 @@ Live site: https://inkfall.de
 
 GitHub repository: https://github.com/SuppenNudel/inkfall
 
+## Deploy and auto-update
+
+A simple remote deployment workflow is included in the `deploy/` folder.
+
+- Use `deploy/setup.sh` for a clean server setup.
+- Use `deploy/update.sh` for a manual restart/update.
+- Use the GitHub webhook receiver in `deploy/github-webhook.py` for push-based auto-updates without polling.
+
+For the full production setup and webhook instructions, see `deploy/DEPLOY.md`.
+
+### Recommended production flow
+
+- run the server behind Nginx + Gunicorn
+- register a GitHub webhook on the repository
+- let the webhook call `deploy/update.sh` on every push
+- keep the app on the same remote host and use the repo as the source of truth
+
 ## Features
 
 - Search and browse Lorcana cards
