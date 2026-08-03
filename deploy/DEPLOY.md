@@ -28,7 +28,7 @@ The script will:
 - `deploy/update.sh` – manual or scheduled pull + restart
 - `deploy/inkfall-update.timer` – runs the update service every 5 minutes
 - `deploy/inkfall-update.service` – fetches the latest code and restarts the app
-- `deploy/lorcana-scryfall.service` – app runtime service
+- `deploy/inkfall.service` – app runtime service
 - `deploy/inkfall.de.nginx.conf` – reverse proxy configuration
 
 ## Auto-update behaviour without polling

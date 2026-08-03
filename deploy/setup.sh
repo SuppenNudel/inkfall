@@ -52,7 +52,23 @@ ln -sf /etc/nginx/sites-available/inkfall.de /etc/nginx/sites-enabled/inkfall.de
 rm -f /etc/nginx/sites-enabled/default
 
 if ! grep -q "include /etc/nginx/snippets/inkfall-webhook.conf;" /etc/nginx/sites-available/inkfall.de; then
-  printf '\ninclude /etc/nginx/snippets/inkfall-webhook.conf;\n' >> /etc/nginx/sites-available/inkfall.de
+  tmp_file="$(mktemp)"
+  awk '
+    BEGIN { inserted = 0 }
+    {
+      print $0
+      if ($0 ~ /^}$/ && inserted == 0) {
+        print "    include /etc/nginx/snippets/inkfall-webhook.conf;"
+        inserted = 1
+      }
+    }
+    END {
+      if (inserted == 0) {
+        print "    include /etc/nginx/snippets/inkfall-webhook.conf;"
+      }
+    }
+  ' /etc/nginx/sites-available/inkfall.de > "$tmp_file"
+  mv "$tmp_file" /etc/nginx/sites-available/inkfall.de
 fi
 
 systemctl daemon-reload
