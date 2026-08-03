@@ -105,6 +105,25 @@
 
 {% block content %}{% endblock %}
 
+<footer class="site-footer">
+  <div class="footer-inner">
+    <a href="/impressum?lang=de">Impressum DE</a>
+    <a href="/impressum?lang=en">Impressum EN</a>
+    <a href="/datenschutz?lang=de">Datenschutzerklärung DE</a>
+    <a href="/datenschutz?lang=en">Datenschutzerklärung EN</a>
+  </div>
+</footer>
+
+<div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie-Hinweis">
+  <div class="cookie-banner__content">
+    <p>
+      Diese Website nutzt technisch notwendige Browser-Speicherung für die Oberfläche.
+      Es werden keine Werbe- oder Analyse-Cookies verwendet.
+    </p>
+    <button type="button" id="cookie-accept">Akzeptieren</button>
+  </div>
+</div>
+
 <script>
   // Syntax toggle (shared across all pages)
   (() => {

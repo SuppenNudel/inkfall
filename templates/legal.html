@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lang == 'en' %}{{ page_title_en or page_title }}{% else %}{{ page_title }}{% endif %} · Lorcana Cards{% endblock %}
+
+{% block content %}
+<main class="legal-page">
+  <div class="legal-card">
+    <div class="legal-header">
+      <h1>{% if lang == 'en' %}{{ page_title_en or page_title }}{% else %}{{ page_title }}{% endif %}</h1>
+      <div class="legal-lang-toggle" role="group" aria-label="Legal page language">
+        <a class="lang-btn {% if lang == 'de' %}active{% endif %}" href="/{{ page }}?lang=de">DE</a>
+        <a class="lang-btn {% if lang == 'en' %}active{% endif %}" href="/{{ page }}?lang=en">EN</a>
+      </div>
+    </div>
+
+    {% if page == 'impressum' %}
+      {% if lang == 'en' %}
+        <p>
+          The operator responsible for the content of this website is the owner of inkfall.de.
+          If you have questions about the site, its content, or the technical implementation,
+          please contact <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a>.
+        </p>
+
+        <h2>Information according to § 5 TMG</h2>
+        <p>
+          Operator: Cedric Rohm<br />
+          Contact: <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a><br />
+          Address: Ringstraße 11, 66484 Großsteinhausen, Germany
+        </p>
+
+        <h2>Liability for content</h2>
+        <p>
+          The content on this website has been created with the greatest care. However, no warranty is
+          given for the correctness, completeness, or timeliness of the information provided.
+        </p>
+
+        <h2>External content and trademarks</h2>
+        <p>
+          This website provides information about Lorcana cards. It is an independent website and is not
+          affiliated with, sponsored by, or connected to Ravensburger, Disney, Lorcana, or any official
+          partner company.
+        </p>
+      {% else %}
+        <p>
+          Verantwortlich für den Inhalt dieser Website ist der Betreiber von inkfall.de.
+          Bei Fragen zur Seite, zu Inhalten oder zur technischen Umsetzung wenden Sie sich bitte per E-Mail
+          an <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a>.
+        </p>
+
+        <h2>Angaben gemäß § 5 TMG</h2>
+        <p>
+          Betreiber: Cedric Rohm<br />
+          Kontakt: <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a><br />
+          Adresse: Ringstraße 11, 66484 Großsteinhausen, Deutschland
+        </p>
+
+        <h2>Haftung für Inhalte</h2>
+        <p>
+          Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit,
+          Vollständigkeit und Aktualität der bereitgestellten Informationen wird jedoch keine Gewährleistung übernommen.
+        </p>
+
+        <h2>Externe Inhalte und Marken</h2>
+        <p>
+          Diese Website stellt Informationen zu Lorcana-Karten bereit. Sie ist unabhängig und nicht
+          mit Ravensburger, Disney, Lorcana oder einem offiziellen Partnerunternehmen verbunden,
+          affiliiert oder gesponsert.
+        </p>
+      {% endif %}
+    {% endif %}
+
+    {% if page == 'datenschutz' %}
+      {% if lang == 'en' %}
+        <p>
+          The following privacy notice explains which data is processed when using this website and for what purposes.
+        </p>
+
+        <h2>Responsible party</h2>
+        <p>
+          The controller for data processing on this website is the operator of inkfall.de.
+          Contact: <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a>
+        </p>
+
+        <h2>Server log files</h2>
+        <p>
+          When the website is accessed, technically necessary access data such as IP address, date, time,
+          requested URL, referrer and user agent are logged on the server. This data is processed to ensure
+          the functionality, security and diagnosis of faults on the website.
+        </p>
+
+        <h2>Local browser storage</h2>
+        <p>
+          The website uses local browser storage for the interface (for example, for card display settings).
+          This data is stored only in the browser and serves the functionality of the site. It is not used
+          for advertising or analytics tracking.
+        </p>
+
+        <h2>Cookies</h2>
+        <p>
+          This website currently does not use advertising or analytics cookies. If further cookies or similar
+          technologies are introduced in the future, a clear and non-intrusive cookie notice will be shown
+          beforehand and user consent will be obtained.
+        </p>
+
+        <h2>Legal basis</h2>
+        <p>
+          Processing is carried out on the basis of Article 6(1)(f) GDPR to protect a legitimate interest in
+          the security and stability of the website and its technical availability.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+          You have the right to information, correction, deletion, restriction of processing, objection to
+          certain processing, and data portability. Please contact <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a>.
+        </p>
+
+        <h2>Independence notice</h2>
+        <p>
+          This website is independent and is not affiliated with, sponsored by, or commercially connected to
+          Ravensburger, Disney, Lorcana or any other brand or product owner.
+        </p>
+      {% else %}
+        <p>
+          Die nachfolgende Datenschutzerklärung informiert darüber, welche Daten bei der Nutzung dieser Website
+          verarbeitet werden und zu welchen Zwecken dies geschieht.
+        </p>
+
+        <h2>Verantwortlicher</h2>
+        <p>
+          Verantwortlich für die Datenverarbeitung auf dieser Website ist der Betreiber von inkfall.de.
+          Kontakt: <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a>
+        </p>
+
+        <h2>Server-Logfiles</h2>
+        <p>
+          Beim Aufruf der Website werden technisch notwendige Zugriffsdaten wie IP-Adresse, Datum, Uhrzeit,
+          angeforderte URL, Referrer und User-Agent im Server-Log protokolliert. Diese Daten werden zur
+          Sicherstellung der Funktionsfähigkeit, Sicherheit und Auswertung von Störungen verarbeitet.
+        </p>
+
+        <h2>Lokale Browser-Speicherung</h2>
+        <p>
+          Die Website nutzt für die Benutzeroberfläche eine lokale Browser-Speicherung (z. B. für die
+          Einstellung der Kartenansicht). Diese Daten werden ausschließlich im Browser gespeichert und dienen
+          der Funktionalität der Seite. Es handelt sich nicht um ein Tracking-Cookie im Sinne der üblichen
+          Werbe- oder Analyseverwendung.
+        </p>
+
+        <h2>Cookies</h2>
+        <p>
+          Aktuell werden auf dieser Website keine werbenden oder analysierenden Cookies gesetzt.
+          Falls in Zukunft weitere Cookies oder ähnliche Technologien eingesetzt werden, wird vorab ein
+          klarer, nicht aufdringlicher Cookie-Hinweis angezeigt und die Zustimmung des Nutzers eingeholt.
+        </p>
+
+        <h2>Rechtsgrundlage</h2>
+        <p>
+          Die Verarbeitung erfolgt auf Basis von Art. 6 Abs. 1 lit. f DSGVO zur Wahrung eines berechtigten
+          Interesses an der Sicherheit und Stabilität der Website sowie der technisch notwendigen Bereitstellung.
+        </p>
+
+        <h2>Ihre Rechte</h2>
+        <p>
+          Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
+          Widerspruch gegen bestimmte Verarbeitungen sowie auf Datenübertragbarkeit. Bitte wenden Sie sich
+          hierzu an <a href="mailto:rohm.cedric@gmail.com">rohm.cedric@gmail.com</a>.
+        </p>
+
+        <h2>Hinweis zur Unabhängigkeit</h2>
+        <p>
+          Diese Website ist unabhängig und nicht mit Ravensburger, Disney, Lorcana oder anderen Marken- oder
+          Produktherren verbunden, affiliiert oder kommerziell verbunden.
+        </p>
+      {% endif %}
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

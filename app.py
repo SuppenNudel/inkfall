@@ -491,6 +491,22 @@ def browse():
     return render_template("browse.html", lang=lang, stories=stories, chars=chars)
 
 
+@app.route("/impressum")
+def impressum():
+    lang = request.args.get("lang", "de")
+    if lang not in SUPPORTED_LANGS:
+        lang = "de"
+    return render_template("legal.html", page="impressum", page_title="Impressum", lang=lang)
+
+
+@app.route("/datenschutz")
+def datenschutz():
+    lang = request.args.get("lang", "de")
+    if lang not in SUPPORTED_LANGS:
+        lang = "de"
+    return render_template("legal.html", page="datenschutz", page_title="Datenschutzerklärung", lang=lang)
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8085))
     app.run(host="0.0.0.0", port=port)

@@ -2,6 +2,22 @@
   "use strict";
   const BASE = "";
 
+  const cookieBanner = document.getElementById("cookie-banner");
+  const cookieAccept = document.getElementById("cookie-accept");
+  const cookieConsentKey = "inkfall-cookie-consent";
+
+  if (cookieBanner && cookieAccept) {
+    const accepted = localStorage.getItem(cookieConsentKey) === "1";
+    if (!accepted) {
+      cookieBanner.classList.add("show");
+    }
+
+    cookieAccept.addEventListener("click", () => {
+      localStorage.setItem(cookieConsentKey, "1");
+      cookieBanner.classList.remove("show");
+    });
+  }
+
   let state = {
     lang: "en",
     q: "",
