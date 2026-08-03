@@ -120,7 +120,11 @@
 
       <!-- Artist -->
       {% if card.artistsText %}
-      <p class="card-artist">Illustrated by {{ card.artistsText }}</p>
+      <p class="card-artist">Illustrated by
+        {% for artist in (card.artistsText.split(" • ") if card.artistsText else []) %}
+        <a class="card-meta-link" href="/?q={{ ('a:"' + artist + '"') | urlencode }}&lang={{ lang }}">{{ artist }}</a>{% if not loop.last %} • {% endif %}
+        {% endfor %}
+      </p>
       {% endif %}
 
       {% if card.cardmarketUrl %}
