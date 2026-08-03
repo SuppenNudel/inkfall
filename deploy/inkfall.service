@@ -1,0 +1,17 @@
+[Unit]
+Description=inkfall Flask app (Gunicorn)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=inkfall
+Group=www-data
+WorkingDirectory=/home/inkfall/project
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/inkfall/project/.venv/bin/gunicorn --bind 127.0.0.1:8085 --workers 2 --timeout 120 --access-logfile - --error-logfile - app:app
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

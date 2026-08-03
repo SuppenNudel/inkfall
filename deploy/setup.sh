@@ -22,6 +22,8 @@ fi
 install -d -o "$APP_USER" -g www-data -m 755 "$APP_DIR"
 
 if [[ ! -d "$APP_DIR/.git" ]]; then
+  rm -rf "$APP_DIR"
+  install -d -o "$APP_USER" -g www-data -m 755 "$APP_DIR"
   sudo -u "$APP_USER" git clone "$REPO_URL" "$APP_DIR"
 fi
 
@@ -33,7 +35,7 @@ sudo -u "$APP_USER" python3 -m venv "$APP_DIR/.venv"
 sudo -u "$APP_USER" "$APP_DIR/.venv/bin/pip" install --upgrade pip
 sudo -u "$APP_USER" "$APP_DIR/.venv/bin/pip" install -r "$APP_DIR/requirements.txt"
 
-cp "$APP_DIR/deploy/lorcana-scryfall.service" "/etc/systemd/system/$SERVICE_NAME"
+cp "$APP_DIR/deploy/inkfall.service" "/etc/systemd/system/$SERVICE_NAME"
 cp "$APP_DIR/deploy/inkfall-webhook.service" /etc/systemd/system/
 cp "$APP_DIR/deploy/inkfall.de.nginx.conf" /etc/nginx/sites-available/inkfall.de
 cp "$APP_DIR/deploy/inkfall-webhook.nginx.conf" /etc/nginx/snippets/inkfall-webhook.conf
