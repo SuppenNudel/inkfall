@@ -52,23 +52,19 @@ ln -sf /etc/nginx/sites-available/inkfall.de /etc/nginx/sites-enabled/inkfall.de
 rm -f /etc/nginx/sites-enabled/default
 
 if ! grep -q "include /etc/nginx/snippets/inkfall-webhook.conf;" /etc/nginx/sites-available/inkfall.de; then
-  tmp_file="$(mktemp)"
-  awk '
-    BEGIN { inserted = 0 }
-    {
-      print $0
-      if ($0 ~ /^}$/ && inserted == 0) {
-        print "    include /etc/nginx/snippets/inkfall-webhook.conf;"
-        inserted = 1
-      }
-    }
-    END {
-      if (inserted == 0) {
-        print "    include /etc/nginx/snippets/inkfall-webhook.conf;"
-      }
-    }
-  ' /etc/nginx/sites-available/inkfall.de > "$tmp_file"
-  mv "$tmp_file" /etc/nginx/sites-available/inkfall.de
+  python3 - <<'PY'
+from pathlib import Path
+path = Path('/etc/nginx/sites-available/inkfall.de')
+text = path.read_text(encoding='utf-8')
+if 'include /etc/nginx/snippets/inkfall-webhook.conf;' not in text:
+    marker = '\n}\n'
+    if marker in text:
+        head, tail = text.rsplit(marker, 1)
+        text = head + '\n    include /etc/nginx/snippets/inkfall-webhook.conf;\n}\n' + tail
+    else:
+        text += '\n    include /etc/nginx/snippets/inkfall-webhook.conf;\n'
+    path.write_text(text, encoding='utf-8')
+PY
 fi
 
 systemctl daemon-reload
