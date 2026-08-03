@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime
 import json
 import os
 from pathlib import Path
 
 import requests
-from flask import Flask, abort, jsonify, make_response, render_template, request
+from flask import Flask, abort, jsonify, render_template, request
 from flask_sitemap import Sitemap
 
 from search_parser import RARITY_ORDER, parse_query
@@ -19,6 +18,8 @@ PAGE_SIZE = 24
 
 app = Flask(__name__)
 app.config['SERVER_NAME'] = 'inkfall.de'
+app.config['SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS'] = False
+app.config['SITEMAP_URL_SCHEME'] = 'https'
 ext = Sitemap(app=app)
 
 _cache: dict[str, list[dict]] = {}
@@ -98,8 +99,11 @@ def _fetch_and_save(lang: str) -> dict:
 def _load(lang: str) -> dict:
     if lang not in _raw_cache:
         path = _data_path(lang)
-        if path.exists():
-            _raw_cache[lang] = json.loads(path.read_text(encoding="utf-8"))
+        if path.exists() and path.stat().st_size > 0:
+            try:
+                _raw_cache[lang] = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                _raw_cache[lang] = _fetch_and_save(lang)
         else:
             _raw_cache[lang] = _fetch_and_save(lang)
         _cache[lang] = _raw_cache[lang]["cards"]
@@ -269,16 +273,26 @@ def _card_detail(c: dict) -> dict:
     })
     return d
 
+
 @ext.register_generator
-def blog_post_urls():
-    # Hier holen Sie normalerweise die Daten aus Ihrer Datenbank
-    # Beispiel: posts = Blog.query.all()
-    vorgestellte_artikel = ['mein-erster-beitrag', 'willkommen-auf-inkfall', 'seo-tipps']
-    
-    for slug in vorgestellte_artikel:
-        # 'blog_post' entspricht dem Namen der Funktion oben bei @app.route
-        yield 'blog_post', {'slug': "test"}
-    return "blog_post", {'slug': "test"}
+def sitemap_urls():
+    """Register all public pages for Flask-Sitemap."""
+    yield "index", {}
+    yield "advanced", {}
+    yield "browse", {}
+
+    try:
+        cards = get_cards("en")
+    except Exception:
+        return
+
+    for card in cards:
+        if card.get("baseId") or card.get("reprintOfId"):
+            continue
+        if card.get("variant") and card.get("variant") != "a":
+            continue
+        yield "card_page", {"card_id": card["id"]}
+
 
 @app.route("/")
 def index():
@@ -432,11 +446,6 @@ def api_refresh():
         return jsonify({"error": str(exc)}), 500
 
 
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8085))
-    app.run(host="0.0.0.0", port=port)
-
-
 @app.route("/advanced")
 def advanced():
     lang = request.args.get("lang", "en")
@@ -480,3 +489,8 @@ def browse():
     chars = sorted(char_counts.items())
 
     return render_template("browse.html", lang=lang, stories=stories, chars=chars)
+
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8085))
+    app.run(host="0.0.0.0", port=port)
