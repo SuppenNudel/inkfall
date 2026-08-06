@@ -33,7 +33,9 @@
       <p class="card-identifier">{{ card.fullIdentifier }}</p>
       {% endif %}
       {% if set_name %}
-      <p class="card-set-name">{{ set_name }}</p>
+      <p class="card-set-name">
+        <a class="card-meta-link" href="/?q={{ ('s:' + card.setCode) | urlencode }}&lang={{ lang }}">{{ set_name }}</a>
+      </p>
       {% endif %}
     </div>
 

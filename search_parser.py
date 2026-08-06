@@ -178,7 +178,10 @@ def _build_clause(keyword: str, op: str, raw_value: str) -> Predicate:
         return lambda c, t=target, o=op: _rarity_cmp(c.get("_rarity") or c.get("rarity", ""), t, o)
 
     if kw in ("s", "e", "set", "edition", "ed"):
-        return lambda c, sv=vl: c.get("setCode", "").lower() == sv
+        return lambda c, sv=vl: (
+            c.get("setCode", "").lower() == sv
+            or sv in (c.get("_setName") or "").lower()
+        )
 
     if kw in ("o", "oracle", "text"):
         return lambda c, tv=vl: tv in (c.get("fullText") or "").lower()

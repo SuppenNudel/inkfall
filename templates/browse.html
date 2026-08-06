@@ -16,7 +16,7 @@
     <h1 class="page-title">Browse</h1>
     <div class="browse-filter-wrap">
       <input id="browse-filter" class="browse-filter" type="search"
-             placeholder="Filter stories or characters…" autocomplete="off" />
+             placeholder="Filter stories, sets, characters, or artists…" autocomplete="off" />
     </div>
   </div>
 
@@ -31,6 +31,23 @@
          href="/?q={{ ("story:\"" + story + "\"") | urlencode }}&lang={{ lang }}"
          data-name="{{ story|lower }}">
         <span class="browse-tile-name">{{ story }}</span>
+        <span class="browse-tile-count">{{ count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="browse-section" id="section-sets">
+    <h2 class="browse-section-title">
+      Sets
+      <span class="browse-count" id="set-count">({{ sets|length }})</span>
+    </h2>
+    <div class="browse-grid" id="set-grid">
+      {% for code, name, count in sets %}
+      <a class="browse-tile"
+         href="/?q={{ ('s:' + code) | urlencode }}&lang={{ lang }}"
+         data-name="{{ (code + ' ' + name)|lower }}">
+        <span class="browse-tile-name">{{ name }}</span>
         <span class="browse-tile-count">{{ count }}</span>
       </a>
       {% endfor %}
@@ -53,6 +70,23 @@
       {% endfor %}
     </div>
   </section>
+
+  <section class="browse-section" id="section-artists">
+    <h2 class="browse-section-title">
+      Artists
+      <span class="browse-count" id="artist-count">({{ artists|length }})</span>
+    </h2>
+    <div class="browse-grid" id="artist-grid">
+      {% for artist, count in artists %}
+      <a class="browse-tile"
+         href="/?q={{ ('a:"' + artist + '"') | urlencode }}&lang={{ lang }}"
+         data-name="{{ artist|lower }}">
+        <span class="browse-tile-name">{{ artist }}</span>
+        <span class="browse-tile-count">{{ count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
 </main>
 {% endblock %}
 
@@ -61,25 +95,39 @@
 (() => {
   const input = document.getElementById("browse-filter");
   const storyCount = document.getElementById("story-count");
+  const setCount   = document.getElementById("set-count");
   const charCount  = document.getElementById("char-count");
+  const artistCount = document.getElementById("artist-count");
 
   input.addEventListener("input", () => {
     const q = input.value.toLowerCase().trim();
 
-    let sc = 0, cc = 0;
+    let sc = 0, sec = 0, cc = 0, ac = 0;
     document.querySelectorAll("#story-grid .browse-tile").forEach(el => {
       const visible = !q || el.dataset.name.includes(q);
       el.style.display = visible ? "" : "none";
       if (visible) sc++;
+    });
+    document.querySelectorAll("#set-grid .browse-tile").forEach(el => {
+      const visible = !q || el.dataset.name.includes(q);
+      el.style.display = visible ? "" : "none";
+      if (visible) sec++;
     });
     document.querySelectorAll("#char-grid .browse-tile").forEach(el => {
       const visible = !q || el.dataset.name.includes(q);
       el.style.display = visible ? "" : "none";
       if (visible) cc++;
     });
+    document.querySelectorAll("#artist-grid .browse-tile").forEach(el => {
+      const visible = !q || el.dataset.name.includes(q);
+      el.style.display = visible ? "" : "none";
+      if (visible) ac++;
+    });
 
     storyCount.textContent = `(${sc})`;
+    setCount.textContent = `(${sec})`;
     charCount.textContent  = `(${cc})`;
+    artistCount.textContent = `(${ac})`;
   });
 })();
 </script>

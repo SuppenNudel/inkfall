@@ -82,6 +82,13 @@ def _annotate_de_cards(de_cards: list[dict]) -> None:
             c["_story"] = c.get("story") or ""
 
 
+def _annotate_set_names(cards: list[dict], sets_meta: dict) -> None:
+    """Add normalized set name shadow field used for set-name search."""
+    for c in cards:
+        set_code = c.get("setCode", "")
+        c["_setName"] = sets_meta.get(set_code, {}).get("name", "")
+
+
 def _data_path(lang: str) -> Path:
     return DATA_DIR / f"allCards_{lang}.json"
 
@@ -107,6 +114,7 @@ def _load(lang: str) -> dict:
         else:
             _raw_cache[lang] = _fetch_and_save(lang)
         _cache[lang] = _raw_cache[lang]["cards"]
+        _annotate_set_names(_cache[lang], _raw_cache[lang].get("sets", {}))
         if lang == "de":
             _annotate_de_cards(_cache[lang])
     return _raw_cache[lang]
@@ -479,6 +487,27 @@ def browse():
     story_counts = Counter(c.get("story", "").strip() for c in lang_cards if c.get("story"))
     stories = sorted(story_counts.items())
 
+    # Sets: display localized set names and link by set code
+    raw = _load(lang)
+    sets_meta = raw.get("sets", {})
+    set_counts: dict[str, int] = {}
+    for c in lang_cards:
+        set_code = c.get("setCode", "")
+        if set_code:
+            set_counts[set_code] = set_counts.get(set_code, 0) + 1
+
+    def _set_sort_key(code: str):
+        try:
+            return (0, int(code))
+        except ValueError:
+            return (1, code)
+
+    sets = [
+        (code, sets_meta.get(code, {}).get("name", f"Set {code}"), count)
+        for code, count in set_counts.items()
+    ]
+    sets.sort(key=lambda row: _set_sort_key(row[0]))
+
     # Character names: use current lang's `name` field from Character cards
     # `type` and `name` fields of Character cards may differ in DE, use _type/_name awareness
     char_counts: dict[str, int] = {}
@@ -488,7 +517,24 @@ def browse():
             char_counts[c["name"]] = char_counts.get(c["name"], 0) + 1
     chars = sorted(char_counts.items())
 
-    return render_template("browse.html", lang=lang, stories=stories, chars=chars)
+    # Artists: split multi-artist cards and count each artist occurrence
+    artist_counts: dict[str, int] = {}
+    for c in lang_cards:
+        artists_text = (c.get("artistsText") or "").strip()
+        if not artists_text:
+            continue
+        for artist in [a.strip() for a in artists_text.split(" • ") if a.strip()]:
+            artist_counts[artist] = artist_counts.get(artist, 0) + 1
+    artists = sorted(artist_counts.items())
+
+    return render_template(
+        "browse.html",
+        lang=lang,
+        stories=stories,
+        sets=sets,
+        chars=chars,
+        artists=artists,
+    )
 
 
 @app.route("/impressum")
