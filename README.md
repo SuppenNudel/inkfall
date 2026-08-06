@@ -30,6 +30,12 @@ For the full production setup and webhook instructions, see `deploy/DEPLOY.md`.
 - Support for multiple languages
 - Sitemap generation for better indexing
 
+## Future Ideas
+
+- Precon Decks
+- Product list
+- pull chance
+
 ## Run locally
 
 ```bash
